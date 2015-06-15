@@ -1,10 +1,3 @@
-/*
- * jQuery Numeric Input - v0.1.6 - 2015-06-09
- * https://github.com/manuelvanrijn/jquery-numeric_input
- * Copyright (c) 2015 Manuel van Rijn
- * Licensed MIT, GPL
- */
-
 ;(function( $, window, document, undefined ) {
 
   var NumericInput = function( elem, options ) {
@@ -26,9 +19,12 @@
         if( _instance.preventDefaultForKeyCode(e.which) === true) {
           e.preventDefault();
         }
-        var newValue = _instance.getNewValueForKeyCode( e.which, _instance.$elem.val() );
+        var selStart = _instance.$elem[0].selectionStart,
+            selEnd = _instance.$elem[0].selectionEnd;
+        var newValue = _instance.getNewValueForKeyCode( e.which, _instance.$elem.val(), selStart, selEnd );
         if( newValue !== false) {
           _instance.$elem.val( newValue );
+		  _instance.$elem[0].setSelectionRange( selStart + 1, selStart + 1 );
           _instance.options.callback.call(_instance, newValue);
         }
       });
@@ -91,9 +87,9 @@
       }
     },
 
-    getNewValueForKeyCode: function( keyCode, currentValue ) {
+    getNewValueForKeyCode: function( keyCode, currentValue, selStart, selEnd ) {
       // if a comma or a dot is pressed...
-      if( keyCode === 44 || keyCode === 46 || keyCode === 188 || keyCode === 190 ) {
+      if( ( keyCode === 44 || keyCode === 46 || keyCode === 188 || keyCode === 190 ) && !this.options.integer ) {
         // and we do not have a options.decimal present...
         if( currentValue.indexOf( this.options.decimal ) === -1 ) {
           // append leading zero if currentValue is empty and leadingZeroCheck is active
@@ -101,7 +97,7 @@
             currentValue = '0';
           }
           // append the options.decimal instead of the dot or comma
-          return currentValue + this.options.decimal;
+          return currentValue.slice( 0, selStart ) + this.options.decimal + currentValue.slice( selEnd );
         }
       }
       // prepend the minus
@@ -169,6 +165,7 @@
     clearInputOnBlurForZeroValue: true,
     allowNegative: false,
     allowEmpty: false,
+    integer: false,
     callback: function() {}
   };
 
