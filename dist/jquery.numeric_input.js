@@ -91,7 +91,8 @@
       // if a comma or a dot is pressed...
       if( ( keyCode === 44 || keyCode === 46 || keyCode === 188 || keyCode === 190 ) && !this.options.integer ) {
         // and we do not have a options.decimal present...
-        if( currentValue.indexOf( this.options.decimal ) === -1 ) {
+        if( currentValue.substring( 0, selStart ).indexOf( this.options.decimal ) === -1 && 
+            currentValue.substring( selEnd, currentValue.length ).indexOf( this.options.decimal ) === -1 ) {
           // append leading zero if currentValue is empty and leadingZeroCheck is active
           if( $.trim(currentValue) === '' && this.options.leadingZeroCheck ) {
             currentValue = '0';
